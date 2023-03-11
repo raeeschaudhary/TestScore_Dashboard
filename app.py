@@ -18,6 +18,7 @@ exams = pd.read_csv('https://raw.githubusercontent.com/raeeschaudhary/coursera_t
 overall = (exams.math_score + exams.reading_score + exams.writing_score)/3
 exams["overall"] = overall
 
+
 def make_empty_fig():
     fig = go.Figure()
     fig.layout.paper_bgcolor = '#E5ECF6'
@@ -161,8 +162,46 @@ refer_dashboard = html.Div([
     dbc.Row([
         dbc.Col(lg=1),
         dbc.Col([
-            html.H1('References'),
-            ], md=12, lg=5),
+            html.H1('Assignment 5: Interactive Data Visualization with Plotly and Dash'),
+            html.Hr(),
+            html.H3('Muhammad Raees (mr2714), Ali Khalid (ak5013), Kaleem Nawaz Khan (kk5271)'), 
+            html.H3('ISTE-782, Spring 2023'),
+            html.Hr(),
+            html.Div([
+                html.P('In this dashboard, we explored and visualized a dataset'),
+                html.A(dbc.Button('View Dataset', id='record-info-btn', 
+                      className='btn btn-orange align-middle btn btn-secondary'), 
+                       href='http://roycekimmons.com/tools/generated_data/exams'),
+                html.P('Dataset contains information about the scores of students in math, reading, ' + 
+                       'and writing. Together with the exam results, it also lists the students ' + 
+                       'ethnicity or race, gender, the level of education of their parents, and if ' + 
+                       'they have access to regular meals and test preparation classes. We examined ' + 
+                       'the data in detail in the last assignment, and in this work, we would like to ' + 
+                       'provide interactivity features to the users through a Plotly Dashboard to examine, ' + 
+                       'evaluate, and interact with the dataset. The interactive features will provide users to ' + 
+                       'dynamically select the data, apply filters, analyze, and visually interpret the results. ' + 
+                       'The main graph of this interactive dashboard is a scatter plot, which allows users to ' + 
+                       'visualize and evaluate the test scores of students and identify patterns. To make the ' + 
+                       'graph more interactive, we provided control to the users to dynamically select the scores ' + 
+                       'to compare. For instance, a user can compare any type of test score with another type of ' + 
+                       'test score (including the overall score which we calculate as an average). ' + 
+                       'To add more interactivity, we allow users to compare the scores across various ' + 
+                       'differentiating factors like gender, ethnicity, whether they get lunches, practice, etc. ' + 
+                       'We provide these options to the users through a set of drop-drop options at the top. ' + 
+                       'Additionally, the user can filter out data based on the education level of parents ' + 
+                       'with multi-selection in a drop-down. Our data does not inherently contain a range of ' + 
+                       'numeric data which might be useful for a slider. However, we use the ethnic background of the ' + 
+                       'user on a categorical slider to choose from a set of ethnicities present in the dataset. ' + 
+                       'Evidently, we can visualize and interact with data more vividly through the Plotly Dash ' + 
+                       'application. We designed the application into multiple pages so that the visualization ' + 
+                       'is separated effectively. The second graph on the homepage shows the correlation between each ' + 
+                       'type of score. All the graphs are interactive with all the controls provided in the application. ' + 
+                       'We also provide the distribution of the data similar to the last assignment. ' + 
+                       'The user can navigate to the "Distribution" page from the top of the page to access ' + 
+                       'different distributions.')
+            ] ,style={'text-align': 'justify'}),
+
+            ], md=12, lg=10),
         dbc.Col([
             
         ], md=12, lg=5),
@@ -258,6 +297,8 @@ def display_dist(edu_levels, ethnicity):
     fig6 = px.histogram(filtered, x="math_score", labels={'math_score':'Math Score'}, title='Math Score Distribution')
     fig7 = px.histogram(filtered, x="writing_score", labels={'writing_score':'Writing Score'}, title='Writing Score Distribution')
     fig8 = px.histogram(filtered, x="reading_score", labels={'reading_score':'Reading Score'}, title='Reading Score Distribution')
+    
+    
 
     return fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8
 
