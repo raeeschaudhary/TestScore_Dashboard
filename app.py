@@ -1,3 +1,6 @@
+#pip install dash
+#pip install dash-bootstrap-components
+#pip install plotly-express
 import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
@@ -30,6 +33,7 @@ main_layout = html.Div([
     dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Distribution", href="dist")),
+        dbc.NavItem(dbc.NavLink("Score Ranges", href="score")),
         dbc.NavItem(dbc.NavLink("References", href="refer")),
     ],
     brand="Student Performance - Data Visualization",
@@ -158,6 +162,54 @@ dist_dashboard = html.Div([
     
 ], style={'backgroundColor': '#E5ECF6'})
 
+score_dashboard = html.Div([
+    dbc.Row([
+        dbc.Col(lg=1),
+        dbc.Col([
+            dbc.Label('Filter Education of Parents'),
+            dcc.Dropdown(id='edu_selector2',
+                         multi=True,
+                         placeholder='Select one or more',
+                         options=[{'label': edu, 'value': edu}
+                                  for edu in exams['parental_level_of_education'].drop_duplicates().sort_values()]),
+            html.Br(),
+            ], md=12, lg=5),
+        dbc.Col([ 
+            dbc.Label('Filter Ethnicity'),
+            dcc.Slider(1, 6, step=None, id='ethnicity_slider2',
+                       marks={
+                           1: 'Group A',
+                           2: 'Group B',
+                           3: 'Group C',
+                           4: 'Group D',
+                           5: 'Group E',
+                           6: "All"
+                       },
+                       value=6
+                      ),
+            ], md=12, lg=5),
+        ]),
+    dbc.Row([
+        dbc.Col(lg=1),
+        dbc.Col([
+            dcc.Graph(id='gender_score_graph',
+                          figure=make_empty_fig()),
+            html.Br(),
+            dcc.Graph(id='ethnicity_score_graph',
+                          figure=make_empty_fig()),
+            html.Br(),
+            dcc.Graph(id='parental_score_graph',
+                          figure=make_empty_fig()),
+            html.Br(),
+            dcc.Graph(id='lunch_score_graph',
+                          figure=make_empty_fig()),
+            dcc.Graph(id='test_score_graph',
+                          figure=make_empty_fig()),
+                ], md=12, lg=10),
+        ]),
+    
+], style={'backgroundColor': '#E5ECF6'})
+
 refer_dashboard = html.Div([
     dbc.Row([
         dbc.Col(lg=1),
@@ -212,6 +264,7 @@ app.validation_layout = html.Div([
     main_layout,
     main_dashboard,
     dist_dashboard,
+    score_dashboard,
     refer_dashboard,
 ])
 
@@ -249,6 +302,8 @@ def display_content(pathname):
         return dist_dashboard
     elif unquote(pathname[1:]) in ['refer']:
         return refer_dashboard
+    elif unquote(pathname[1:]) in ['score']:
+        return score_dashboard
     else:
         return main_dashboard
     
@@ -298,9 +353,62 @@ def display_dist(edu_levels, ethnicity):
     fig7 = px.histogram(filtered, x="writing_score", labels={'writing_score':'Writing Score'}, title='Writing Score Distribution')
     fig8 = px.histogram(filtered, x="reading_score", labels={'reading_score':'Reading Score'}, title='Reading Score Distribution')
     
-    
-
     return fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8
+
+
+#This method plots the main figures with input from user
+@app.callback(Output('gender_score_graph', 'figure'),
+              Output('ethnicity_score_graph', 'figure'),
+              Output('parental_score_graph', 'figure'),
+              Output('lunch_score_graph', 'figure'),
+              Output('test_score_graph', 'figure'),
+              Input('edu_selector2', 'value'),
+              Input('ethnicity_slider2', 'value'),
+             )
+def display_scores_box(edu_levels, ethnicity):
+    filtered = exams.copy()
+    filtered = filter_data(edu_levels, ethnicity, filtered)
+    fig1 = go.Figure()
+    x =exams['gender']
+    fig1.add_trace(go.Box(y=filtered['math_score'], x=x, name='Math Score', marker_color='black'))
+    fig1.add_trace(go.Box(y=filtered['writing_score'], x=x, name='Writing Score', marker_color='blue'))
+    fig1.add_trace(go.Box(y=filtered['reading_score'], x=x, name='Reading Score', marker_color='orange'))
+    fig1.add_trace(go.Box(y=filtered['overall'], x=x, name='Reading Score', marker_color='green')) 
+    fig1.update_layout(title="Gender wise Scores", boxmode='group')
+
+    fig2 = go.Figure()
+    x=exams['ethnicity']
+    fig2.add_trace(go.Box(y=filtered['math_score'], x=x, name='Math Score', marker_color='black'))
+    fig2.add_trace(go.Box(y=filtered['writing_score'], x=x, name='Writing Score', marker_color='blue'))
+    fig2.add_trace(go.Box(y=filtered['reading_score'], x=x, name='Reading Score', marker_color='orange'))
+    fig2.add_trace(go.Box(y=filtered['overall'], x=x, name='Reading Score', marker_color='green')) 
+    fig2.update_layout(title="Ethnicity/Race wise Scores", boxmode='group')
+    
+    fig3 = go.Figure()
+    x=exams['parental_level_of_education']
+    fig3.add_trace(go.Box(y=filtered['math_score'], x=x, name='Math Score', marker_color='black'))
+    fig3.add_trace(go.Box(y=filtered['writing_score'], x=x, name='Writing Score', marker_color='blue'))
+    fig3.add_trace(go.Box(y=filtered['reading_score'], x=x, name='Reading Score', marker_color='orange'))
+    fig3.add_trace(go.Box(y=filtered['overall'], x=x, name='Reading Score', marker_color='green')) 
+    fig3.update_layout(title="Parental education wise Scores", boxmode='group')
+
+    fig4 = go.Figure()
+    x=exams['lunch']
+    fig4.add_trace(go.Box(y=filtered['math_score'], x=x, name='Math Score', marker_color='black'))
+    fig4.add_trace(go.Box(y=filtered['writing_score'], x=x, name='Writing Score', marker_color='blue'))
+    fig4.add_trace(go.Box(y=filtered['reading_score'], x=x, name='Reading Score', marker_color='orange'))
+    fig4.add_trace(go.Box(y=filtered['overall'], x=x, name='Reading Score', marker_color='green')) 
+    fig4.update_layout(title="Lunch program wise Scores", boxmode='group')
+    
+    fig5 = go.Figure()
+    x=exams['test_preparation_course']
+    fig5.add_trace(go.Box(y=filtered['math_score'], x=x, name='Math Score', marker_color='black'))
+    fig5.add_trace(go.Box(y=filtered['writing_score'], x=x, name='Writing Score', marker_color='blue'))
+    fig5.add_trace(go.Box(y=filtered['reading_score'], x=x, name='Reading Score', marker_color='orange'))
+    fig5.add_trace(go.Box(y=filtered['overall'], x=x, name='Reading Score', marker_color='green')) 
+    fig5.update_layout(title="Test preparation wise Scores", boxmode='group')
+    
+    return fig1, fig2, fig3, fig4, fig5
 
     
 if __name__ == '__main__':
