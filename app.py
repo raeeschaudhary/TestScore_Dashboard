@@ -108,13 +108,11 @@ main_dashboard = html.Div([
     dbc.Row([
         dbc.Col(lg=1),
         dbc.Col([
-            html.H1('Assignment 5: Interactive Data Visualization with Plotly and Dash'),
+            html.H1('Interactive Data Visualization with Plotly and Dash'),
             html.Hr(),
-            html.H3('Muhammad Raees (mr2714), Ali Khalid (ak5013), Kaleem Nawaz Khan (kk5271)'), 
-            html.H3('ISTE-782, Spring 2023'),
+            html.H3('Muhammad Raees'), 
             html.Hr(),
             html.Div([
-                html.P('In this dashboard, we explored and visualized a dataset'),
                 html.A(dbc.Button('View Dataset', id='record-info-btn', 
                       className='btn btn-orange align-middle btn btn-secondary'), 
                        href='http://roycekimmons.com/tools/generated_data/exams'),
